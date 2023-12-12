@@ -1,35 +1,37 @@
 from rest_framework import serializers
-from .models import User, Calle, Comentario, Incidentes, CallePeligrosas
+from .models import Comentario, Incidentes, CallePeligrosas, Cliente, Like
+import hashlib
 
-class UserSerializer(serializers.ModelSerializer):
+# Serializando el cliente = user
+class ClienteSerializer(serializers.ModelSerializer):
     class Meta:
-        model = User
-
-        fields = [
-            'id','name','email','numero','password']
-
+        model = Cliente
+        fields = ['id', 'nombre', 'email', 'numero', 'password']
+    # Funcion que encripta el password ingresado por el user
     def create(self, validated_data):
         password = validated_data.pop('password', None)
-        instance = self.Meta.model(**validated_data)
         if password is not None:
-            instance.set_password(password)
+            hashed_password = hashlib.sha256(password.encode()).hexdigest()
+            validated_data['password'] = hashed_password
+
+        instance = self.Meta.model(**validated_data)
         instance.save()
         return instance
     
-class CalleSerializer(serializers.ModelSerializer):
-    class Meta:
-        model = Calle
-        fields = ['id','nombres','latitud','longitud','nivelSeguridad']
-
 class ComentariosSerializer(serializers.ModelSerializer):
     class Meta:
         model = Comentario
-        fields = ['idCalle','comentario']
+        fields = ['idcliente','comentario', 'fechaCreacion']
+
+class likeSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Like
+        fields = '__all__'
 
 class IncidentesSerializer(serializers.ModelSerializer):
     class Meta:
         model = Incidentes
-        fields = ['id','idusuario','latitud','longitud','descripcion','aprobado']
+        fields = ['id','idusuario','latitud','longitud','descripcion','tipoIncidente','nivelPeligro','estado','fechaCreacion']
 
 class CallesPeligrosaSerializer(serializers.ModelSerializer):
     class Meta:
