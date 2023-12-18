@@ -89,7 +89,7 @@ WSGI_APPLICATION = 'restTec.wsgi.application'
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.mysql',
-        'NAME': 'tecsecurity',
+        'NAME': 'proyecto',
         'PASSWORD': '12345678',
         'USER': 'root',
         'HOST': '127.0.0.1',

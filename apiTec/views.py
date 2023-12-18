@@ -7,7 +7,10 @@ import jwt, datetime
 from rest_framework import generics, viewsets
 from rest_framework.generics import CreateAPIView
 import hashlib
+from rest_framework import status
+from rest_framework.response import Response
 from rest_framework.decorators import action
+from rest_framework.permissions import IsAuthenticated
         
     
 # PUREBA DE REGISTRO CLIENTE
@@ -69,7 +72,14 @@ class LoginView(APIView):
         # Recoje el password y lo encripta  y lo compara con el hashed_password almacenado
         hashed_input_password = hashlib.sha256(raw_password.encode()).hexdigest()
         return hashed_input_password == hashed_password
-    
+
+class UserInfoView(APIView):
+    permission_classes = [IsAuthenticated]
+    def get(self, request):
+        # Obtiene la información del usuario basándose en el token
+        user = request.user
+        serializer = ClienteSerializer(user)
+        return Response(serializer.data)
 
 class UserView(APIView):
     def get(self, request):
@@ -136,6 +146,7 @@ class comentarioList(generics.ListAPIView):
     queryset = Comentario.objects.all()
     serializer_class = ComentariosSerializer
 
+
 class incidenteCreate(generics.CreateAPIView):
     queryset = Incidentes.objects.all()
     serializer_class = IncidentesSerializer
@@ -143,6 +154,22 @@ class incidenteCreate(generics.CreateAPIView):
 class incidenteLista(generics.ListAPIView):
     queryset = Incidentes.objects.all()
     serializer_class = IncidentesSerializer
+
+# Obteniendo solo los incidentes que hayan sido aprobados
+class incidentesAprobados(generics.ListAPIView):
+    queryset = Incidentes.objects.filter(estado='Aprobado')
+    serializer_class = IncidentesSerializer
+
+class CambiarEstadoIncidente(APIView):
+    def put(self, request, pk):
+        try:
+            incidente = Incidentes.objects.get(pk=pk)
+            nuevo_estado = request.data.get('estado', incidente.estado)
+            incidente.estado = nuevo_estado
+            incidente.save()
+            return Response({'message': 'Estado actualizado correctamente'}, status=status.HTTP_200_OK)
+        except Incidentes.DoesNotExist:
+            return Response({'message': 'El incidente no existe'}, status=status.HTTP_404_NOT_FOUND)
 
 class callePeligrosaCreate(generics.CreateAPIView):
     queryset = CallePeligrosas.objects.all()
