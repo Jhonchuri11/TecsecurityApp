@@ -29,11 +29,11 @@ SECRET_KEY = os.environ.get('SECRET_KEY', default='your secret key')
 DEBUG = 'RENDER' not in os.environ
 
 #ALLOWED_HOSTS = []
-ALLOWED_HOSTS = ['192.168.18.76']
-#RENDER_EXTERNAL_HOSTNAME = os.environ.get('RENDER_EXTERNAL_HOSTNAME')
+ALLOWED_HOSTS = []
+RENDER_EXTERNAL_HOSTNAME = os.environ.get('RENDER_EXTERNAL_HOSTNAME')
 
-#if RENDER_EXTERNAL_HOSTNAME:
-#    ALLOWED_HOSTS.append(RENDER_EXTERNAL_HOSTNAME)
+if RENDER_EXTERNAL_HOSTNAME:
+    ALLOWED_HOSTS.append(RENDER_EXTERNAL_HOSTNAME)
 
 
 # Application definition
@@ -86,23 +86,25 @@ WSGI_APPLICATION = 'restTec.wsgi.application'
 # Database
 # https://docs.djangoproject.com/en/4.2/ref/settings/#databases
 
-DATABASES = {
-    'default': {
-        'ENGINE': 'django.db.backends.mysql',
-        'NAME': 'proyecto',
-        'PASSWORD': '12345678',
-        'USER': 'root',
-        'HOST': '127.0.0.1',
-        'PORT': '33066',
-    }
-}
+# Para uso de base de datos local
 
 #DATABASES = {
- #   'default': dj_database_url.config(
-  #      default='sqlite:///db.sqlite3',
-   #     conn_max_age=600
-    #)
+#    'default': {
+#        'ENGINE': 'django.db.backends.mysql',
+#        'NAME': 'proyecto',
+#        'PASSWORD': '12345678',
+#        'USER': 'root',
+#        'HOST': '127.0.0.1',
+#        'PORT': '33066',
+#    }
 #}
+
+DATABASES = {
+    'default': dj_database_url.config(
+        default='sqlite:///db.sqlite3',
+        conn_max_age=600
+    )
+}
 
 
 # Password validation
